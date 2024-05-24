@@ -52,7 +52,7 @@ include "modelo/usuario.php";
             <a href="vista/Pedidos/menu.php"><button button class="btn btn-primary">Sistema de Pedidos</button></a>
             <a href="vista/Acceso/inicio_sesion.php"><button button class="btn btn-primary">Administración</button></a>
             <br>
-            <div class="label">Christian José Quintana Perera, Fernando Zerpa Niño y Moises Pestano</div>
+            <div class="label">Christian José Quintana Perera, Fernando Zerpa Niño y Moisés Antonio Pestano Castro</div>
             <br>
             <div class="label">Curso: 1º DAW</div>
             <br>

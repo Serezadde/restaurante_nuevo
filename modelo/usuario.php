@@ -102,29 +102,28 @@ class Usuario
 
 
 
-    // Función para verificar las credenciales del usuario
-    function verificarCredenciales()
-    {
+    function verificarCredenciales() {
         try {
-            $querySelect = "SELECT * FROM usuario WHERE nombre = :nombre AND password = :password";
+            //los usuarios deben de estar disponibles, por lo que no se aceptarán aquellos cuyo campo disponible sea 0
+            $querySelect = "SELECT * FROM usuario WHERE nombre = :nombre AND password = :password AND disponible = 1";
             $instanciaDB = $this->db->prepare($querySelect);
             $instanciaDB->bindParam(":nombre", $this->nombre);
             $instanciaDB->bindParam(":password", $this->password);
             $instanciaDB->execute();
-    
-            // Verificar si se encontró al menos una fila de resultados
             $usuario = $instanciaDB->fetch(PDO::FETCH_ASSOC);
-    
+
             if ($usuario) {
-                return true; // Credenciales válidas
-            } else {
-                return false; // Credenciales inválidas
+                return true;
+            }
+            else {
+                return false;
             }
         } catch (PDOException $ex) {
             echo "Ocurrió un error: " . $ex->getMessage();
             return false;
         }
     }
+
     
 
 

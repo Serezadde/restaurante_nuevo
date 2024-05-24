@@ -3,7 +3,7 @@ class bd
 {
     private $cadenaConexion = "mysql:dbname=restaurante;host=localhost;port=3306";
     private $usuario = "root";
-    private $clave = "";
+    private $clave = "1111";
 
     function conectarBD()
     {

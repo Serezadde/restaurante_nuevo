@@ -9,17 +9,12 @@ if (isset($_POST['usuario']) && isset($_POST['password'])) {
     $usuario->setNombre($nombre);
     $usuario->setPassword($password);
 
-    // Verificar credenciales
-    $credenciales_validas = $usuario->verificarCredenciales();
-
-    if ($credenciales_validas) {
-        // Credenciales válidas, redirigir a la página de administración
+    if ($usuario->verificarCredenciales()) {
         header("Location: ../Administracion/administración_menu.php");
         exit();
-    } else {
-        // Credenciales inválidas, mostrar un mensaje de error
-        echo '<div class="alert alert-warning">Credenciales inválidas. Por favor, inténtelo de nuevo</div>';
+    }
+    else {
+        echo '<div class="alert alert-warning">Credenciales inválidas o usuario no disponible</div>';
     
     }
 }
-
