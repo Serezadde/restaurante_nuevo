@@ -3,12 +3,12 @@
 
 <?php
 include "../../componentes/head.php";
-include "../../../modelo/conexion.php";
+include "../../modelo/conexion.php";
 $id = $_GET["id"];
 ?>
 
 <head>
-  <title>Administración de Productos</title>
+  <title>Nuevo pedido</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://kit.fontawesome.com/aec7d72014.js" crossorigin="anonymous"></script>
   <style>
@@ -28,23 +28,23 @@ $id = $_GET["id"];
     }
   </script>
   <?php
-  include "../../../modelo/conexion.php";
+  include "../../modelo/conexion.php";
   ?>
   <div class="container-fluid row">
     <div class="col-md-4">
-      <h2 class="text-left p-3">Crear Producto:</h2>
-      <form name="CrearProdForm" method="post" action="../../../controlador/Gestion/Producto/crear.php">
-        <div class="mb-3">
-          <label for="exampleInputNombre" class="form-label">Nombre:</label>
-          <input type="text" class="form-control" name="nombre">
-        </div>
-        <div class="mb-3">
-          <label for="exampleInputPrecio" class="form-label">Precio:</label>
-          <input type="number" class="form-control" name="precio" step="0.01">
-        </div>
+      <h2 class="text-left p-3">Nuevo Pedido</h2>
+      <form name="CrearProdForm" method="post" action="../../controlador/Gestion/Producto/crear.php">
+        
+        <!-- categorias -->
         <div>
-          <?php include "../../../componentes/seleccioncategoria.php"; ?>
+          <?php include "../../componentes/seleccioncategoria.php"; ?>
         </div>
+
+        <!-- productos -->
+        <div>
+          <?php include "../../componentes/seleccionproducto.php"; ?>
+        </div>
+
         <button type="submit" class="btn btn-primary" name="btncrear" value="okcrear">Crear</button>
       </form>
     </div>
@@ -71,7 +71,7 @@ $id = $_GET["id"];
               <td><?= $datos->categoria ?></td>
               <td>
                 <a href="../../../vista/Gestion/Producto/editar_prod.php?id=<?= $datos->id ?>" class="btn btn-small btn-warning">Editar <i class="fa-solid fa-pen-to-square"></i></a>
-                <a onclick="return eliminar()" href="../../../controlador/Gestion/Producto/eliminar.php?id=<?= $datos->id ?>" class="btn btn-small btn-danger">Borrar <i class="fa-solid fa-trash"></i></a>
+                <a onclick="return eliminar()" href="../../controlador/Gestion/Producto/eliminar.php?id=<?= $datos->id ?>" class="btn btn-small btn-danger">Borrar <i class="fa-solid fa-trash"></i></a>
               </td>
             </tr>
           <?php } ?>
