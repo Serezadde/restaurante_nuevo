@@ -1,17 +1,36 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>Administración de Productos</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://kit.fontawesome.com/aec7d72014.js" crossorigin="anonymous"></script>
   <style>
-    body { font-family: Arial, sans-serif; font-size: 16px; }
-    tbody tr { cursor: pointer; }
-    .form-label, .form-control { font-size: 17px; }
-    .btn { font-size: 17px; }
-    #productosTable th, #productosTable td { font-size: 17px; }
+    body {
+      font-family: Arial, sans-serif;
+      font-size: 16px;
+    }
+
+    tbody tr {
+      cursor: pointer;
+    }
+
+    .form-label,
+    .form-control {
+      font-size: 17px;
+    }
+
+    .btn {
+      font-size: 17px;
+    }
+
+    #productosTable th,
+    #productosTable td {
+      font-size: 17px;
+    }
   </style>
 </head>
+
 <body>
   <h1 class="text-center p-3">Productos:</h1>
   <script>
@@ -77,4 +96,5 @@
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

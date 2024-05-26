@@ -32,35 +32,36 @@ class Usuario
 
     function guardar()
     {
-        // Preparar la sentencia SQL para insertar o actualizar el usuario en la base de datos
         if ($this->id) {
-            // Si el usuario ya tiene un ID, actualizar los datos
-            $sql = "UPDATE usuario SET nombre=?, password=?, disponible=? WHERE id=?";
+            $sql = "CALL sp_restaurante_usuario_editar(?, ?, ?, ?)";
             $stmt = $this->db->prepare($sql);
-            $stmt->bindParam("ssii", $this->nombre, $this->password, $this->disponible, $this->id);
+            $stmt->bindParam(1, $this->id, PDO::PARAM_INT);
+            $stmt->bindParam(2, $this->nombre, PDO::PARAM_STR);
+            $stmt->bindParam(3, $this->password, PDO::PARAM_STR);
+            $stmt->bindParam(4, $this->disponible, PDO::PARAM_INT);
         } else {
-            // Si es un nuevo usuario, insertar los datos
-            $sql = "INSERT INTO usuario (nombre, password, disponible) VALUES (?, ?, ?)";
+            $sql = "CALL sp_restaurante_usuario_insertar(?, ?, ?)";
             $stmt = $this->db->prepare($sql);
-            $stmt->bindParam("ssi", $this->nombre, $this->password, $this->disponible);
+            $stmt->bindParam(1, $this->nombre, PDO::PARAM_STR);
+            $stmt->bindParam(2, $this->password, PDO::PARAM_STR);
+            $stmt->bindParam(3, $this->disponible, PDO::PARAM_INT);
         }
-
-        // Ejecutar la consulta preparada
+    
         if ($stmt->execute()) {
-            return true; // La operación de guardado fue exitosa
+            return true; 
         } else {
-            return false; // Hubo un error al guardar el usuario
+            return false; 
         }
     }
+    
 
 
 
     function cambiarContrasena($nuevaContrasena)
     {
-        // Encriptar la nueva contraseña antes de guardarla en la base de datos
+
         $this->password = password_hash($nuevaContrasena, PASSWORD_DEFAULT);
 
-        // Llamar al método guardar para actualizar la contraseña en la base de datos
         return $this->guardar();
     }
 
@@ -68,35 +69,33 @@ class Usuario
 
     function obtenerPorId($idUsuario)
     {
-        // Preparar la sentencia SQL para obtener el usuario por su ID
+  
         $sql = "SELECT * FROM usuario WHERE id=?";
         $stmt = $this->db->prepare($sql);
         $stmt->bindParam(1, $idUsuario, PDO::PARAM_INT);
 
-        // Ejecutar la consulta preparada
+ 
         $stmt->execute();
 
-        // Vincular las columnas de resultado a variables
         $stmt->bindColumn('id', $idUsuario);
         $stmt->bindColumn('nombre', $nombre);
         $stmt->bindColumn('password', $password);
         $stmt->bindColumn('disponible', $disponible);
 
-        // Obtener los resultados de la consulta
         $resultados = array();
         while ($stmt->fetch(PDO::FETCH_BOUND)) {
-            // Crear un nuevo objeto Usuario con los datos obtenidos
+       
             $usuario = new Usuario();
             $usuario->setId($idUsuario);
             $usuario->setNombre($nombre);
             $usuario->setPassword($password);
             $usuario->setDisponible($disponible);
 
-            // Agregar el usuario al array de resultados
+        
             $resultados[] = $usuario;
         }
 
-        // Devolver el array de usuarios encontrados
+    
         return $resultados;
     }
 
@@ -106,26 +105,24 @@ class Usuario
     function verificarCredenciales()
     {
         try {
-            $querySelect = "SELECT * FROM usuario WHERE nombre = :nombre AND password = :password";
-            $instanciaDB = $this->db->prepare($querySelect);
-            $instanciaDB->bindParam(":nombre", $this->nombre);
-            $instanciaDB->bindParam(":password", $this->password);
-            $instanciaDB->execute();
+            $sql = "CALL sp_restaurante_usuario_verificar_credenciales(:nombre, :password)";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(":nombre", $this->nombre, PDO::PARAM_STR);
+            $stmt->bindParam(":password", $this->password, PDO::PARAM_STR);
+            $stmt->execute();
+            
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
     
-            // Verificar si se encontró al menos una fila de resultados
-            $usuario = $instanciaDB->fetch(PDO::FETCH_ASSOC);
-    
-            if ($usuario) {
-                return true; // Credenciales válidas
+            if ($result && $result['resultado'] == 'true') {
+                return true;
             } else {
-                return false; // Credenciales inválidas
+                return false;
             }
         } catch (PDOException $ex) {
             echo "Ocurrió un error: " . $ex->getMessage();
             return false;
         }
     }
-    
 
 
 
@@ -159,34 +156,46 @@ class Usuario
         }
     }
 
-
     function actualizarUsuarios($contrasenaActual, $nuevaContrasena, $repetirContrasena)
-{
-    try {
-        // Verificar si las contraseñas nueva y repetida coinciden
-        if ($nuevaContrasena !== $repetirContrasena) {
-            return "Las contraseñas nueva y repetida no coinciden";
+    {
+        try {
+            // Llamar al procedimiento almacenado para verificar la contraseña actual
+            $queryVerify = "CALL sp_restaurante_usuario_verificar_contra(:contrasenaActual)";
+            $instanciaDB = $this->db->prepare($queryVerify);
+            $instanciaDB->bindParam(":contrasenaActual", $contrasenaActual);
+            $instanciaDB->execute();
+    
+            // Obtener el resultado del procedimiento almacenado
+            $contrasenaValida = $instanciaDB->fetchColumn();
+    
+            if (!$contrasenaValida) {
+                return "La contraseña actual no es válida";
+            }
+    
+            // Verificar si las contraseñas nueva y repetida coinciden
+            if ($nuevaContrasena !== $repetirContrasena) {
+                return "Las contraseñas nueva y repetida no coinciden";
+            }
+    
+            // Actualizar la contraseña en la base de datos
+            $queryUpdate = "UPDATE usuario SET password = :password WHERE password = :contrasenaActual";
+            $instanciaDB = $this->db->prepare($queryUpdate);
+            $instanciaDB->bindParam(":password", $nuevaContrasena);
+            $instanciaDB->bindParam(":contrasenaActual", $contrasenaActual);
+            $instanciaDB->execute();
+    
+            if ($instanciaDB->rowCount() > 0) {
+                return '<div class="alert alert-success">Contraseña actualizada correctamente</div>';
+            } else {
+                return '<div class="alert alert-warning">La contraseña actual no coincide con la registrada en la base de datos</div>';
+            }
+        } catch (Exception $ex) {
+            // Manejar errores aquí 
+            return '<div class="alert alert-warning">Ocurrió un error al actualizar la contraseña</div>';
         }
-
-
-        // Actualizar la contraseña en la base de datos
-        $queryUpdate = "UPDATE usuario SET password = :password WHERE password = :contrasenaActual";
-        $instanciaDB = $this->db->prepare($queryUpdate);
-        $instanciaDB->bindParam(":password", $nuevaContrasena);
-        $instanciaDB->bindParam(":contrasenaActual", $contrasenaActual);
-        $instanciaDB->execute();
-
-        if ($instanciaDB->rowCount() > 0) {
-             echo '<div class="alert alert-success">Contraseña actualizada correctamente</div>';
-        } else {
-            echo '<div class="alert alert-warning">La contraseña actual no coincide con la registrada en la base de datos</div>';
-      }
-    } catch (Exception $ex) {
-        // Manejar errores aquí 
-        echo '<div class="alert alert-warning">Ocurrió un error al actualizar la contraseña</div>';
-  
     }
-}
+    
+
 
     
     

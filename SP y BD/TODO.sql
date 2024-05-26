@@ -1,3 +1,83 @@
+--Usuario
+
+--Editar
+
+DELIMITER //
+
+CREATE PROCEDURE sp_restaurante_usuario_editar(
+    IN p_id INT,
+    IN p_nombre VARCHAR(255),
+    IN p_password VARCHAR(255),
+    IN p_disponible TINYINT(1)
+)
+BEGIN
+    UPDATE usuario
+    SET nombre = p_nombre,
+        password = p_password,
+        disponible = p_disponible
+    WHERE id = p_id;
+END //
+
+DELIMITER ;
+
+--Insertar
+
+DELIMITER //
+
+CREATE PROCEDURE sp_restaurante_usuario_insertar(
+    IN p_nombre VARCHAR(255),
+    IN p_password VARCHAR(255),
+    IN p_disponible TINYINT(1)
+)
+BEGIN
+    INSERT INTO usuario (nombre, password, disponible)
+    VALUES (p_nombre, p_password, p_disponible);
+END //
+
+DELIMITER ;
+
+--Verificar credenciales:
+
+DELIMITER //
+
+CREATE PROCEDURE sp_restaurante_usuario_verificar_credenciales(
+    IN p_nombre VARCHAR(255),
+    IN p_password VARCHAR(255)
+)
+BEGIN
+    DECLARE v_existe INT;
+    
+    SELECT COUNT(*)
+    INTO v_existe
+    FROM usuario
+    WHERE nombre = p_nombre AND password = p_password;
+
+    IF v_existe > 0 THEN
+        SELECT 'true' AS resultado;
+    ELSE
+        SELECT 'false' AS resultado;
+    END IF;
+END //
+
+DELIMITER ;
+
+--cambiar contra
+
+DELIMITER //
+
+CREATE PROCEDURE sp_restaurante_usuario_verificar_contra(IN p_contrasena VARCHAR(255))
+BEGIN
+    DECLARE v_valido BOOLEAN DEFAULT FALSE;
+
+    SELECT IF(COUNT(*) > 0, TRUE, FALSE) INTO v_valido
+    FROM usuario
+    WHERE password = p_contrasena;
+
+    SELECT v_valido AS valido;
+END//
+
+DELIMITER ;
+
 --Categoria
 
 --Insertar
@@ -188,22 +268,61 @@ DELIMITER ;
 
 DELIMITER //
 
+CREATE PROCEDURE sp_restaurante_obtener_historial_pedidos()
+BEGIN
+    SELECT * FROM pedido;
+END //
+
+DELIMITER ;
+
+--Primera parte de detalles del pedido
+DELIMITER //
+
 CREATE PROCEDURE sp_restaurante_pedido_detalle(IN pedido_id INT)
 BEGIN
     DECLARE total_pedido DECIMAL(10,2);
+    DECLARE v_pedido_id INT;
+    DECLARE v_en_curso VARCHAR(5);
+    DECLARE v_fecha DATE;
+    DECLARE v_nombre_mesa VARCHAR(255);
 
- 
-    SELECT p.id AS pedido_id, p.fecha, m.nombre AS nombre_mesa
+    SELECT p.id, p.en_curso, p.fecha, m.nombre
+    INTO v_pedido_id, v_en_curso, v_fecha, v_nombre_mesa
     FROM pedido p
     LEFT JOIN mesa m ON p.id_mesa = m.id
-    WHERE p.id = pedido_id
-    INTO @pedido_id, @fecha, @nombre_mesa;
+    WHERE p.id = pedido_id;
 
-       CALL CalcularPrecioFinalPedidoConCursor(pedido_id, total_pedido);
+    CALL CalcularPrecioFinalPedidoConCursor(pedido_id, total_pedido);
 
-
-    SELECT @pedido_id AS id_pedido, @fecha AS fecha, @nombre_mesa AS nombre_mesa, total_pedido AS precio_total;
+    SELECT v_pedido_id AS id_pedido, v_en_curso AS en_curso, v_fecha AS fecha, v_nombre_mesa AS nombre_mesa, total_pedido AS precio_total;
 END //
+
+DELIMITER ;
+
+--segunda parte de detalles del pedido, para los productos
+
+
+
+DELIMITER $$
+
+CREATE PROCEDURE `sp_restaurante_obtener_productos_pedido` (IN pedido_id INT)
+BEGIN
+    SELECT 
+        producto.nombre AS Producto, 
+        producto.precio AS Precio, 
+        comanda_producto.cantidad AS Unidades, 
+        (producto.precio * comanda_producto.cantidad) AS Subtotal
+    FROM 
+        producto
+    INNER JOIN 
+        comanda_producto ON producto.id = comanda_producto.id_producto
+    INNER JOIN 
+        comanda ON comanda.id = comanda_producto.id_comanda
+    INNER JOIN 
+        pedido ON pedido.id = comanda.id_pedido
+    WHERE 
+        pedido.id = pedido_id;
+END$$
 
 DELIMITER ;
 

@@ -79,5 +79,6 @@ class Producto
             return "Ocurrió un error: " . $ex->getMessage();
         }
     }
+
 }
 

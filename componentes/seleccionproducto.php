@@ -1,6 +1,6 @@
 <div class="form-group">
-    <label for="seleccionCat">Categoría</label>
-    <select class="form-select" name="seleccionCat" id="seleccionCat" aria-label="Seleccionar Categoría" style="font-size: 18px;">
+    <label for="seleccionPro">Producto</label>
+    <select class="form-select" name="seleccionCat" id="seleccionPro" aria-label="Seleccionar Categoría" style="font-size: 18px;">
         <?php
         include "../../../modelo/conexion.php";
         $sql_categorias = "SELECT * FROM categoria";

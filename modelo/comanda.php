@@ -23,11 +23,11 @@ class Comanda {
         return $stmt->get_result()->fetch_assoc();
     }
 
-    public function crearComanda($id_pedido, $id_producto, $unidades) {
-        $query = "INSERT INTO comanda (id_pedido, id_producto, unidades) VALUES (?, ?, ?)";
-        $stmt = $this->conexion->prepare($query);
-        $stmt->bind_param('iii', $id_pedido, $id_producto, $unidades);
-        return $stmt->execute();
+    public function crearComanda($id_pedido) {
+        $sql = "CALL CrearComanda(?)";
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->bind_param("i", $id_pedido);
+        $stmt->execute();
     }
 
     public function actualizarComanda($id, $id_pedido, $id_producto, $unidades) {
@@ -79,6 +79,36 @@ class Comanda {
             echo "Ocurrió un error: " . $ex->getMessage();
             return false;
         }
+    }
+
+    public function obtenerProductos() {
+        try {
+            // Preparar la consulta SQL
+            $query = "SELECT * FROM producto";
+            // Ejecutar la consulta
+            $stmt = $this->conexion->query($query);
+            // Obtener y retornar los resultados
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $ex) {
+            // Manejar cualquier error que ocurra durante la ejecución de la consulta
+            echo "Error al obtener productos: " . $ex->getMessage();
+            return [];
+        }
+    }
+    public function anadirProductoAComanda($id_comanda, $id_producto, $cantidad) {
+        $sql = "CALL AnadirProductoAComanda(?, ?, ?)";
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->bind_param("iii", $id_comanda, $id_producto, $cantidad);
+        $stmt->execute();
+    }
+
+    public function obtenerUltimaComandaPorPedido($id_pedido) {
+        $sql = "SELECT id FROM comanda WHERE id_pedido = ? ORDER BY id DESC LIMIT 1";
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->bind_param("i", $id_pedido);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_assoc();
     }
     
 }

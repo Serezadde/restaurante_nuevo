@@ -56,7 +56,10 @@
         <h3>Devolución: <?= $devolucion ?>€</h3>
     <?php } ?>
 
-    <form method="post">
+    <!-- Formulario para finalizar el pedido -->
+    <form method="post" action="../../controlador/Pedido/pedido_finalizado.php">
+    <input type="hidden" name="id_pedido" value="<?= htmlspecialchars($_GET['id_pedido']) ?>">
+
         <input type="hidden" name="finalizar" value="1">
         <button type="submit" class="btn btn-success">Finalizar Pedido</button>
     </form>
