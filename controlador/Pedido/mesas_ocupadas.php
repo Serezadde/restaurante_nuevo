@@ -18,7 +18,7 @@ if (isset($_POST['mesa'])) {
         $pedido_id = $pedido_row['id'];
 
         // Redirigir a la página de agregar comanda con el pedido seleccionado
-        header("Location: ../../../vista/Comanda/listar.php?pedido_id=$pedido_id");
+        header("Location: ../../vista/Comanda/listar.php?pedido_id=$pedido_id");
         
     } else {
         echo "Error: No se encontró un pedido en curso para la mesa seleccionada.";

@@ -28,6 +28,7 @@
         ?>
         <br>
         <input type="submit" value="Seleccionar Mesa">
+
     </form>
 </body>
 </html>

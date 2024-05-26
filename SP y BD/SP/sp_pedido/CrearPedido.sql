@@ -5,6 +5,7 @@ CREATE PROCEDURE CrearPedido(
     IN en_curso VARCHAR(5), 
     IN fecha DATE, 
     IN id_mesa INT
+    OUT id INT
 )
 BEGIN
     DECLARE id INT;
@@ -13,8 +14,7 @@ BEGIN
     VALUES (precio, en_curso, fecha, id_mesa);
     
     SET id = LAST_INSERT_ID();
-    
-    SELECT id AS last_id;
+
 END$$
 
 DELIMITER ;

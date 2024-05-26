@@ -11,7 +11,6 @@ if (isset($_GET['id'])) {
     $sql->execute();
     $resultado = $sql->get_result();
 
-    // Mostrar los productos del pedido
     while ($datos = $resultado->fetch_object()) {
 ?>
         <tr>

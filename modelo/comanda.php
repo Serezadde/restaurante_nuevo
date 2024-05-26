@@ -23,12 +23,7 @@ class Comanda {
         return $stmt->get_result()->fetch_assoc();
     }
 
-    public function crearComanda($id_pedido) {
-        $sql = "CALL CrearComanda(?)";
-        $stmt = $this->conexion->prepare($sql);
-        $stmt->bind_param("i", $id_pedido);
-        $stmt->execute();
-    }
+
 
     public function actualizarComanda($id, $id_pedido, $id_producto, $unidades) {
         $query = "UPDATE comanda SET id_pedido = ?, id_producto = ?, unidades = ? WHERE id = ?";
@@ -95,12 +90,7 @@ class Comanda {
             return [];
         }
     }
-    public function anadirProductoAComanda($id_comanda, $id_producto, $cantidad) {
-        $sql = "CALL AnadirProductoAComanda(?, ?, ?)";
-        $stmt = $this->conexion->prepare($sql);
-        $stmt->bind_param("iii", $id_comanda, $id_producto, $cantidad);
-        $stmt->execute();
-    }
+
 
     public function obtenerUltimaComandaPorPedido($id_pedido) {
         $sql = "SELECT id FROM comanda WHERE id_pedido = ? ORDER BY id DESC LIMIT 1";
@@ -109,6 +99,47 @@ class Comanda {
         $stmt->execute();
         $result = $stmt->get_result();
         return $result->fetch_assoc();
+    }
+
+    public function obtenerMesasOcupadas() {
+        $query = $this->conexion->prepare("CALL ObtenerMesasOcupadas()");
+        $query->execute();
+        return $query->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function obtenerPedidoPorMesa($mesa_id) {
+        $query = $this->conexion->prepare("SELECT * FROM pedido WHERE id_mesa = :mesa_id AND en_curso = 'true'");
+        $query->bindParam(':mesa_id', $mesa_id, PDO::PARAM_INT);
+        $query->execute();
+        return $query->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function obtenerCategorias() {
+        $query = $this->conexion->prepare("CALL sp_restaurante_categoria_seleccionar()");
+        $query->execute();
+        return $query->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function obtenerProductosPorCategoria($categoria_id) {
+        $query = $this->conexion->prepare("CALL ObtenerProductosPorCategoria(:categoria_id)");
+        $query->bindParam(':categoria_id', $categoria_id, PDO::PARAM_INT);
+        $query->execute();
+        return $query->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function crearComanda($id_pedido) {
+        $query = $this->conexion->prepare("CALL CrearComanda(:id_pedido)");
+        $query->bindParam(':id_pedido', $id_pedido, PDO::PARAM_INT);
+        $query->execute();
+        return $this->conexion->lastInsertId();
+    }
+
+    public function anadirProductoAComanda($id_comanda, $id_producto, $cantidad) {
+        $query = $this->conexion->prepare("CALL AnadirProductoAComanda(:id_comanda, :id_producto, :cantidad)");
+        $query->bindParam(':id_comanda', $id_comanda, PDO::PARAM_INT);
+        $query->bindParam(':id_producto', $id_producto, PDO::PARAM_INT);
+        $query->bindParam(':cantidad', $cantidad, PDO::PARAM_INT);
+        $query->execute();
     }
     
 }

@@ -75,6 +75,7 @@ class Mesas {
         }
     }
 
+    /*
     public function obtenerMesasOcupadas() {
         try {
             $query = "SELECT * FROM mesa WHERE id IN (SELECT DISTINCT id_mesa FROM pedido WHERE en_curso = 'true')";
@@ -89,6 +90,7 @@ class Mesas {
             return [];
         }
     }
+    */
 
 
 
