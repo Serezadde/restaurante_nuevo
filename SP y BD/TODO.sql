@@ -96,18 +96,27 @@ DELIMITER $$
 
 CREATE PROCEDURE sp_restaurante_categoria_insertar(
     IN nombre VARCHAR(255),
-   
     OUT id INT
 )
 BEGIN
+    DECLARE exit_handler BOOLEAN DEFAULT FALSE;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET exit_handler = TRUE;
+
+    START TRANSACTION;
+    
     INSERT INTO categoria (nombre) 
     VALUES (nombre);
     
     SET id = LAST_INSERT_ID();
+    
+    IF exit_handler THEN
+        ROLLBACK;
+    ELSE
+        COMMIT;
+    END IF;
 END $$
 
 DELIMITER ;
-
 --Seleccionar
 
 DELIMITER $$
@@ -156,8 +165,19 @@ CREATE PROCEDURE sp_restaurante_producto_insertar(
     IN id_categoria_producto INT
 )
 BEGIN
+    DECLARE exit_handler BOOLEAN DEFAULT FALSE;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET exit_handler = TRUE;
+
+    START TRANSACTION;
+    
     INSERT INTO producto(nombre, precio, id_categoria)
     VALUES (nombre_producto, precio_producto, id_categoria_producto);
+    
+    IF exit_handler THEN
+        ROLLBACK;
+    ELSE
+        COMMIT;
+    END IF;
 END //
 
 DELIMITER ;
