@@ -3,22 +3,21 @@ require "../../modelo/conexion.php";
 require "../../modelo/pedido.php";
 require "../../modelo/comanda.php";
 
-// Verificar si se ha proporcionado el ID del pedido en la URL
-if (!isset($_GET['id_pedido']) || !is_numeric($_GET['id_pedido'])) {
-    // Manejar el caso cuando no se proporciona un ID de pedido válido
+// Verificar si se ha proporcionado el ID del pedido en la URL o en el formulario
+if (!isset($_GET['id_pedido']) && !isset($_POST['id_pedido'])) {
     echo "ID de pedido no válido";
     exit();
 }
 
+$id_pedido = isset($_GET['id_pedido']) ? $_GET['id_pedido'] : $_POST['id_pedido'];
+
 $pedidoModel = new Pedido($conexion);
 $comandaModel = new Comanda($conexion);
 
-$id_pedido = $_GET['id_pedido'];
 $pedido = $pedidoModel->obtenerPedidoPorId($id_pedido);
 
 // Verificar si se encontró el pedido con el ID proporcionado
 if (!$pedido) {
-    // Manejar el caso cuando no se encuentra un pedido con el ID proporcionado
     echo "Pedido no encontrado";
     exit();
 }

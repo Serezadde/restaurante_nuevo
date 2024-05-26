@@ -51,7 +51,7 @@ include "../../componentes/head.php";
 
             <a href="../../vista/Gestion/Mesas/mesas_disponibles.php"><button button class="btn btn-primary">Nuevo Pedido</button></a>
             <a href=""><button button class="btn btn-primary">Añadir comanda a pedido</button></a>
-            <a href=""><button button class="btn btn-primary">Finalizar pedido</button></a>
+            <a href="../../vista/Pedidos/antes_finalizar.php"><button button class="btn btn-primary">Finalizar pedido</button></a>
 
         </div>
     </div>

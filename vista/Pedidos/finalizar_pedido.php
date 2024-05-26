@@ -48,6 +48,7 @@
         </div>
         <button type="submit" class="btn btn-primary" name="pagar_dinero">Pagar con Dinero</button>
         <button type="submit" class="btn btn-primary" name="pagar_tarjeta">Pagar con Tarjeta</button>
+        <input type="hidden" name="id_pedido" value="<?= htmlspecialchars($_GET['id_pedido']) ?>">
     </form>
 
     <?php if (isset($forma_pago)) { ?>
@@ -58,8 +59,7 @@
 
     <!-- Formulario para finalizar el pedido -->
     <form method="post" action="../../controlador/Pedido/pedido_finalizado.php">
-    <input type="hidden" name="id_pedido" value="<?= htmlspecialchars($_GET['id_pedido']) ?>">
-
+        <input type="hidden" name="id_pedido" value="<?= htmlspecialchars($_GET['id_pedido']) ?>">
         <input type="hidden" name="finalizar" value="1">
         <button type="submit" class="btn btn-success">Finalizar Pedido</button>
     </form>
